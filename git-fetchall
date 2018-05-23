@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+
+import os
+import subprocess
+import sys
+
+def main():
+  if len(sys.argv) <= 1:
+    default_remote = "origin"
+  else:
+    default_remote = sys.argv[1]
+  if not os.path.exists(".gitmanifest"):
+    print("fetchall: missing .gitmanifest")
+    return
+  with open(".gitmanifest") as manifest:
+    for entry in manifest:
+      entry = entry.strip()
+      if not os.path.exists(entry):
+        print("fetchall: warning: missing repository '{}'".format(entry))
+        continue
+      print("fetchall: descending into '{}'...".format(entry))
+      args = ["git", "fetch", default_remote]
+      p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=entry)
+      p.wait()
+      ret = p.returncode
+      print("fetchall:   return code: {}".format(ret))
+
+if __name__ == "__main__":
+  main()
