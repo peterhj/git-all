@@ -25,7 +25,7 @@ def main():
         print("mergeall: warning: missing repository '{}'".format(entry))
         missing.append(entry)
         continue
-      sys.stdout.write("mergeall: descending into '{}'...".format(entry))
+      sys.stdout.write("mergeall: descending into '{}'... ".format(entry))
       args = ["git", "merge", "--ff-only", default_remote, default_branch]
       p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=entry)
       p.wait()
@@ -33,12 +33,13 @@ def main():
       out = p.stdout.read()
       err = p.stderr.read()
       if ret == 0 and out == "Already up-to-date.\n":
-        sys.stdout.write(" ")
-        print(out[:-1])
-      else:
-        print("")
+        print("success")
+      elif ret == 0:
+        print("success:")
         print(out)
-      if len(err) != 0:
+      if ret != 0 or len(err) != 0:
+        print("FAILED:")
+        print(out)
         print(err)
       if False:
         print("mergeall:   return: {}".format(ret))

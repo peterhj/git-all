@@ -21,7 +21,7 @@ def main():
         print("fetchall: warning: missing repository '{}'".format(entry))
         missing.append(entry)
         continue
-      print("fetchall: descending into '{}'...".format(entry))
+      sys.stdout.write("fetchall: descending into '{}'... ".format(entry))
       args = ["git", "fetch", default_remote]
       p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=entry)
       p.wait()
@@ -29,10 +29,13 @@ def main():
       out = p.stdout.read()
       err = p.stderr.read()
       if ret == 0 and len(out) == 0:
-        pass
-      else:
+        print("success")
+      elif ret == 0:
+        print("success:")
         print(out)
-      if len(err) != 0:
+      if ret != 0 or len(err) != 0:
+        print("FAILED:")
+        print(out)
         print(err)
       if False:
         print("fetchall:   return: {}".format(ret))
