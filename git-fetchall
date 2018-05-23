@@ -12,18 +12,44 @@ def main():
   if not os.path.exists(".gitmanifest"):
     print("fetchall: missing .gitmanifest")
     return
+  missing = []
+  failures = []
   with open(".gitmanifest") as manifest:
     for entry in manifest:
       entry = entry.strip()
       if not os.path.exists(entry):
         print("fetchall: warning: missing repository '{}'".format(entry))
+        missing.append(entry)
         continue
       print("fetchall: descending into '{}'...".format(entry))
       args = ["git", "fetch", default_remote]
       p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=entry)
       p.wait()
       ret = p.returncode
-      print("fetchall:   return code: {}".format(ret))
+      out = p.stdout.read()
+      err = p.stderr.read()
+      if ret == 0 and len(out) == 0:
+        pass
+      else:
+        print(out)
+      if len(err) != 0:
+        print(err)
+      if False:
+        print("fetchall:   return: {}".format(ret))
+        print("fetchall:   stdout: {}".format(out))
+        print("fetchall:   stderr: {}".format(err))
+      if ret != 0:
+        failures.append(entry)
+  if len(missing) != 0:
+    print("")
+    print("MISSING:")
+    for entry in missing:
+      print("  '{}'".format(entry))
+  if len(failures) != 0:
+    print("")
+    print("FAILED TO FETCH:")
+    for entry in failures:
+      print("  '{}'".format(entry))
 
 if __name__ == "__main__":
   main()
