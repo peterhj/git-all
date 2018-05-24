@@ -16,8 +16,9 @@ def main():
   if not os.path.exists(".gitmanifest"):
     print("mergeall: missing .gitmanifest")
     return
+  updated = []
   missing = []
-  failures = []
+  failed = []
   with open(".gitmanifest") as manifest:
     for entry in manifest:
       entry = entry.strip()
@@ -33,10 +34,11 @@ def main():
       out = p.stdout.read()
       err = p.stderr.read()
       if ret == 0 and out == "Already up-to-date.\n":
-        print("success")
+        print("ok")
       elif ret == 0:
         print("success:")
         print(out)
+        updated.append(entry)
       if ret != 0 or len(err) != 0:
         print("FAILED:")
         print(out)
@@ -46,16 +48,21 @@ def main():
         print("mergeall:   stdout: {}".format(out))
         print("mergeall:   stderr: {}".format(err))
       if ret != 0:
-        failures.append(entry)
+        failed.append(entry)
+  if len(updated) != 0:
+    print("")
+    print("UPDATED:")
+    for entry in updated:
+      print("  '{}'".format(entry))
   if len(missing) != 0:
     print("")
     print("MISSING:")
     for entry in missing:
       print("  '{}'".format(entry))
-  if len(failures) != 0:
+  if len(failed) != 0:
     print("")
     print("FAILED TO MERGE:")
-    for entry in failures:
+    for entry in failed:
       print("  '{}'".format(entry))
 
 if __name__ == "__main__":
