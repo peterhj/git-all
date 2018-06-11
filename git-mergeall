@@ -36,7 +36,7 @@ def main():
       if ret == 0 and out == "Already up-to-date.\n":
         print("ok")
       elif ret == 0:
-        print("success:")
+        print("success")
         print(out)
         updated.append(entry)
       if ret != 0 or len(err) != 0:

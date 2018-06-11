@@ -29,15 +29,13 @@ def main():
       ret = p.returncode
       out = p.stdout.read()
       err = p.stderr.read()
-      if ret == 0 and len(out) == 0:
-        print("ok")
-      elif ret == 0:
-        print("success:")
-        print(out)
-        updated.append(entry)
       if ret == 0 and len(err) != 0:
+        print("success")
         print(err)
-      elif ret != 0 and len(err) != 0:
+        updated.append(entry)
+      elif ret == 0:
+        print("ok")
+      if ret != 0 and len(err) != 0:
         print("FAILED:")
         print(out)
         print(err)
